@@ -7,22 +7,31 @@
 	header('Content-Type: application/json; charset=UTF-8');
 	
 	// принимаем входящие параметры
-	$nickname = $_GET['nickname'];
-	$uid = $_GET['uid'];
-	$limit = $_GET['limit'];
-	$options = $_GET['options'];
+	$nickname = $uid = $limit = $options = '';
+	
+	$nickname = test_input($_GET['nickname']);
+	$uid = test_input($_GET['uid']);
+	$limit = test_input($_GET['limit']);
+	$options = test_input($_GET['options']);
+	
+	function test_input($data) {
+		$data = trim($data);
+		$data = stripslashes($data);
+		$data = htmlspecialchars($data);
+		return $data;
+	}
 	
 	// Параметры по умолчанию
 	$defaultoptions = 'uid,nickname,effRating,karma,prestigeBonus,gamePlayed,gameWin,totalAssists,totalBattleTime,totalDeath,totalDmgDone,totalHealingDone,totalKill,totalVpDmgDone,clanName,clanTag';
 	
-	if (!isset($_GET['nickname']) and !isset($_GET['uid'])) {
+	if (empty($nickname) and empty($uid)) {
 		Error('invalid request');
 	}
-	if (!isset($_GET['limit']) or intval($limit)>300) {
+	if (empty($limit) or intval($limit)>300) {
 		$limit = '300';
 	}
 	
-	if (!isset($_GET['options']) or $options == 'max' or $options == 'all') {
+	if (empty($options) or $options == 'max' or $options == 'all') {
 		$options = $defaultoptions;
 	}
 	if ($options == 'min') {
@@ -41,7 +50,7 @@
 	
 	
 	// если uid не указан, узнаем его
-	if (!isset($uid)) {
+	if (empty($uid)) {
 		$uid = FindUidFromNickname($nickname);
 	}
 	
